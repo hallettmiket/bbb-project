@@ -1,6 +1,7 @@
 .claude/settings.local.json
 .DS_Store
 outputs/
+data/
 __pycache__/
 *.pyc
 .env
