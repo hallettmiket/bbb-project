@@ -1,0 +1,115 @@
+
+Round 1:
+
+This prompt is the first step to analyze the BBB dataset.  
+Please spawn all four subagents simultaneously to work in parallel.
+
+- BLACKSMITH: Find and load the BBB dataset Shaker et al. PMID  33112379
+
+-Determine basic statistics (number of molecules, class balance, number of features). Don’t forget to summarize your work as requested.
+
+- BOOKWORM: Look up the paper "Shaker et al. 2021 Bioinformatics BBB" and write a 200 word summary of the dataset and methodology. Make sure you create your literature_summary
+
+- ARTIST: Generate a simple bar chart showing BBB+ vs BBB- class balance (use placeholder values 70% / 30% if data not ready yet)
+
+- ADVERSARY: Review the approach used in Shaker et al. and flag any potential issues which should be considered in the planned analysis pipeline. 
+Save your critique to  your audit document. 
+Don’t forget to review the artist’s work and critique it too.
+Also review the blacksmith work and make sure that the download was successful.
+
+
+
+Round 2:
+The prompt focus on the next phase of analysis. 
+
+Artist: I want you to choose the top 5 predictions from Shaker et al. and draw  their molecular structure.
+You could add it to your gallery. 
+Make sure to inform the blacksmith of what tools you are using to draw the molecules
+
+Blacksmith: I want you to write a streamlist graphic user interface to allow the user to explore the data set. 
+It is important that we can see which of the four underlying data sets each molecule comes 
+from.
+When we perform classification later on, 
+we're not going to use perhaps all of the different properties. 
+Allow the user to select properties that they want.
+Please organize all of the properties of each molecule into categories
+and provide a short explanation of each. 
+Make sure the user interface for the user the results of the experiments 
+( whether it traverses the basement membrane or not ) 
+and what the computational prediction was from Shaker et al.
+Using the same tool for drawing molecules as the artist used, 
+allow the user to click on any molecule in the data set and
+see the image in the GUI
+
+Bookworm: I want you to look at the literature for what is known about classifying 
+molecules that do not traverse the BBB. 
+These techniques may not be based on computation, but rather knowledge of chemistry.
+Write a short report about this methodology, of course, add to your literature review.
+
+Adversary: I want you to critique the methods used for prediction in Shaker et al.
+Point out any weaknesses in their approach and suggest an
+alternative approach. Ideally we want the simplest approach Occam's razor.
+In the next round, the Blacksmith will implement this. 
+
+
+
+
+
+
+
+
+
+
+- BLACKSMITH: I want you to implement two classifiers to predict whether a molecule will 
+through the BBB. The first classifier should be as close as possible to the original shaker paper. I will leave the choice of methodology for the second classifier to you.
+Perhaps a decision tree or something like it in the same vein like a regression forest.
+It's important that the methodology is simple as possible to start with.
+Good results that we can use a more fancy method later.
+
+Run the predictor over the data set using whatever variables the users is chosen
+
+Bookworm: I want you to look at the literature for what is known about classifying molecules as either 
+that do or do not traverse the basement membrane. I want you to focus on papers that are perhaps not computational.
+They might be older papers that found basic principles to predict this. Make sure that disinformation is added to your summary and reading list.
+
+
+Artist: after the blacksmith has run the predictions on the data set, pick the top five molecules predicted to traverse the BBB.
+I would like to see images in your gallery of each of these molecules, not the smiles. I also want you to generate graphs that describe the performance of the blacksmith's classify.
+
+
+
+
+
+
+
+Prompt #?
+
+For the top 10 BBB+ predicted molecules, query ClinicalTrials.gov 
+to identify which are currently in active CNS clinical trials. 
+Then query ChEMBL for their known CNS targets. Report any molecule 
+that is both predicted BBB+ by our model AND currently in a Phase 
+II or III CNS trial — these are our model's validation cases.
+
+We have molecules predicted to cross the BBB — but what proteins do they actually bind to?"
+The pipeline extension:
+
+BLACKSMITH uses the predicted BBB+ molecules and queries ChEMBL or SwissTargetPrediction for their likely protein targets
+BOOKWORM fetches those protein structures from AlphaFold DB (full proteome is publicly available via API)
+ARTIST visualizes the predicted binding pocket using py3Dmol or NGLview — a rotating 3D protein structure with the ligand docked appears in the output
+ADVERSARY asks: "Is the predicted target actually expressed in the brain? Check GTEx for brain expression data."
+
+This hits genetics (target genes, expression), protein structure (AlphaFold), and cheminformatics (BBB filter) all in one pipeline. For your audience this would be genuinely exciting because it mirrors real computational drug discovery workflows.
+APIs needed: AlphaFold DB API (free, no key), SwissTargetPrediction (web), GTEx API (free).
+
+
+Prompt #? 
+
+Can we predict not just whether a molecule crosses the BBB, but whether it's likely to hit a druggable CNS target based on structural features?"
+The extension:
+
+Pull the top 20 BBB+ predicted molecules
+Query UniProt + AlphaFold for their known/predicted targets
+Run a simple pocket druggability analysis using fpocket (open source, installable via pip) or just query PDB for known structures
+ARTIST renders a summary: for each top molecule, show its predicted target, the AlphaFold confidence score for the binding region, and whether a crystal structure exists in PDB
+
+This is purely computational, requires no wet lab data, and produces visually impressive 3D protein outputs that a structural biology audience will immediately recognize and respect.

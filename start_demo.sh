@@ -1,10 +1,14 @@
 #!/bin/bash
 # ~/Desktop/bbb-project/start_demo.sh
+#
+# Opens 5 windows on external display:
+#   Left 42%:  VSCode (Conductor) with Claude Code extension
+#   Right 54%: 4 iTerm2 windows (Blacksmith, Bookworm, Artist, Adversary)
+#              stacked vertically, each spanning the agent area width
 
-SESSION="bbb-demo"
+CODE="/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code"
 
-
-# External display logical coordinates (AppleScript uses points, not pixels)
+# ── External display logical coordinates ──────────────────────────────────────
 # LG 4K display: 1920x1080 logical points, positioned above laptop display
 DISPLAY_X=-92
 DISPLAY_Y=-1080
@@ -12,154 +16,94 @@ DISPLAY_WIDTH=1920
 DISPLAY_HEIGHT=1080
 MENU_BAR=25
 
-# Pre-compute bounds (AppleScript can't do bash arithmetic)
-BOUNDS_LEFT=$DISPLAY_X
-BOUNDS_TOP=$(( DISPLAY_Y + MENU_BAR ))
-BOUNDS_RIGHT=$(( DISPLAY_X + DISPLAY_WIDTH ))
-BOUNDS_BOTTOM=$(( DISPLAY_Y + DISPLAY_HEIGHT ))
+# ── Layout geometry ───────────────────────────────────────────────────────────
+# VSCode (Conductor): left 42%
+VSCODE_LEFT=$DISPLAY_X
+VSCODE_TOP=$(( DISPLAY_Y + MENU_BAR ))
+VSCODE_RIGHT=$(( DISPLAY_X + DISPLAY_WIDTH * 44 / 100 ))
+VSCODE_BOTTOM=$(( DISPLAY_Y + DISPLAY_HEIGHT ))
 
-# Open iTerm2 window on external display, full width, nearly full height
-osascript <<EOF
-tell application "iTerm2"
-  activate
-  set newWindow to (create window with default profile)
-  tell newWindow
-    set bounds to {$BOUNDS_LEFT, $BOUNDS_TOP, $BOUNDS_RIGHT, $BOUNDS_BOTTOM}
-  end tell
-end tell
-EOF
+# Agent windows: stacked vertically, same height as VSCode (menu bar to bottom)
+# Small gap between VSCode and agent area
+AGENT_LEFT=$(( DISPLAY_X + DISPLAY_WIDTH * 44 / 100 ))
+AGENT_RIGHT=$(( DISPLAY_X + DISPLAY_WIDTH * 98 / 100 ))
+AGENT_TOP=$(( DISPLAY_Y + MENU_BAR ))
+AGENT_BOTTOM=$(( DISPLAY_Y + DISPLAY_HEIGHT ))
+USABLE_HEIGHT=$(( AGENT_BOTTOM - AGENT_TOP ))
+AGENT_ROW1_TOP=$AGENT_TOP
+AGENT_ROW2_TOP=$(( AGENT_TOP + USABLE_HEIGHT / 4 ))
+AGENT_ROW3_TOP=$(( AGENT_TOP + USABLE_HEIGHT / 2 ))
+AGENT_ROW4_TOP=$(( AGENT_TOP + USABLE_HEIGHT * 3 / 4 ))
 
-sleep 0.5
+# ── Create output directories and empty log files ────────────────────────────
+mkdir -p ~/Desktop/bbb-project/outputs/{blacksmith,bookworm,artist,adversary}
+touch ~/Desktop/bbb-project/outputs/{blacksmith,bookworm,artist,adversary}/progress.log
 
-# Set font size in a separate AppleScript call
-osascript <<'EOF'
-tell application "iTerm2"
-  tell current window
-    tell current session
-      set font size to 18
+# ── 1. Open VSCode as the Conductor ──────────────────────────────────────────
+"$CODE" ~/Desktop/bbb-project &
+sleep 3
+
+osascript -e "tell application \"Visual Studio Code\" to activate"
+sleep 1
+# VSCode (Electron) doesn't support AppleScript bounds directly; use System Events
+osascript -e "tell application \"System Events\" to tell process \"Code\"
+  set position of front window to {$VSCODE_LEFT, $VSCODE_TOP}
+  set size of front window to {$(( VSCODE_RIGHT - VSCODE_LEFT )), $(( VSCODE_BOTTOM - VSCODE_TOP ))}
+end tell"
+
+sleep 1
+
+# ── 2. Helper: open an iTerm2 window, position it, run tail -f ───────────────
+open_agent_window() {
+  local NAME="$1"
+  local B_LEFT=$2
+  local B_TOP=$3
+  local B_RIGHT=$4
+  local B_BOTTOM=$5
+  local COLOR=$6
+  local LOG_FILE="$7"
+
+  # Create window and position it
+  osascript -e "tell application \"iTerm2\"
+    create window with default profile
+    delay 0.3
+    set bounds of front window to {$B_LEFT, $B_TOP, $B_RIGHT, $B_BOTTOM}
+  end tell"
+
+  sleep 0.3
+
+  # Send commands to the new window
+  osascript -e "tell application \"iTerm2\"
+    tell front window
+      tell current session
+        write text \"printf '\\\\033[${COLOR}m'; clear; echo '  $NAME'; echo '  ─────────────────────'; echo; tail -f $LOG_FILE\"
+      end tell
     end tell
-  end tell
-end tell
-EOF
+  end tell"
+}
 
+# ── 3. Open 4 agent windows stacked vertically ───────────────────────────────
+# Row 1: Blacksmith (green)
+open_agent_window "⚒  BLACKSMITH" \
+  $AGENT_LEFT $AGENT_ROW1_TOP $AGENT_RIGHT $AGENT_ROW2_TOP \
+  "32" ~/Desktop/bbb-project/outputs/blacksmith/progress.log
 sleep 0.5
 
-# ── 2. Kill any old session cleanly and wait for server to settle ────────────
-tmux kill-server 2>/dev/null
-sleep 1
-
-# ── 3. Create session ────────────────────────────────────────────────────────
-tmux new-session -d -s $SESSION -x 220 -y 52
+# Row 2: Bookworm (blue)
+open_agent_window "📚  BOOKWORM" \
+  $AGENT_LEFT $AGENT_ROW2_TOP $AGENT_RIGHT $AGENT_ROW3_TOP \
+  "34" ~/Desktop/bbb-project/outputs/bookworm/progress.log
 sleep 0.5
 
-# Enable mouse mode so selection respects pane boundaries
-tmux set-option -t $SESSION mouse on
-tmux set-option -t $SESSION @pane-is-vim 0
+# Row 3: Artist (magenta)
+open_agent_window "🎨  ARTIST" \
+  $AGENT_LEFT $AGENT_ROW3_TOP $AGENT_RIGHT $AGENT_ROW4_TOP \
+  "35" ~/Desktop/bbb-project/outputs/artist/progress.log
+sleep 0.5
 
+# Row 4: Adversary (red)
+open_agent_window "⚔  ADVERSARY" \
+  $AGENT_LEFT $AGENT_ROW4_TOP $AGENT_RIGHT $AGENT_BOTTOM \
+  "31" ~/Desktop/bbb-project/outputs/adversary/progress.log
 
-# ── 4. Send tmux attach to the new iTerm2 window ────────────────────────────
-osascript <<EOF
-tell application "iTerm2"
-  tell current window
-    tell current session
-      write text "cd ~/Desktop/bbb-project && tmux attach -t $SESSION"
-    end tell
-  end tell
-end tell
-EOF
-
-sleep 1
-
-# ── 4. Build layout: conductor top, 4 equal columns below ───────────────────
-tmux split-window -v -t $SESSION:0 -p 60
-tmux split-window -h -t $SESSION:0.1 -p 75
-tmux split-window -h -t $SESSION:0.2 -p 67
-tmux split-window -h -t $SESSION:0.3 -p 50
-
-# ── 5. Pane border style ─────────────────────────────────────────────────────
-tmux set-option -t $SESSION pane-border-status top
-tmux set-option -t $SESSION pane-border-style "fg=colour240"
-tmux set-option -t $SESSION pane-active-border-style "fg=colour255,bold"
-
-# ── 6. Name panes with embedded colors in the title ─────────────────────────
-tmux select-pane -t $SESSION:0.0 -T "#[fg=colour255,bold]🎼  CONDUCTOR#[default]"
-tmux select-pane -t $SESSION:0.1 -T "#[fg=colour35,bold]⚒  BLACKSMITH#[default]"
-tmux select-pane -t $SESSION:0.2 -T "#[fg=colour33,bold]📚  BOOKWORM#[default]"
-tmux select-pane -t $SESSION:0.3 -T "#[fg=colour135,bold]🎨  ARTIST#[default]"
-tmux select-pane -t $SESSION:0.4 -T "#[fg=colour196,bold]⚔  ADVERSARY#[default]"
-
-tmux set-option -t $SESSION pane-border-format " #{pane_title} "
-
-# ── CRITICAL: disable automatic renaming so Claude Code can't overwrite titles
-tmux set-option -t $SESSION allow-rename off
-tmux set-option -t $SESSION automatic-rename off
-
-# ── 7. Per-pane border colors (tmux 3.4+) ────────────────────────────────────
-TMUX_VER=$(tmux -V | awk '{print $2}')
-if awk "BEGIN {exit !($TMUX_VER >= 3.4)}"; then
-  tmux select-pane -t $SESSION:0.1 -P "fg=colour35"
-  tmux select-pane -t $SESSION:0.2 -P "fg=colour33"
-  tmux select-pane -t $SESSION:0.3 -P "fg=colour135"
-  tmux select-pane -t $SESSION:0.4 -P "fg=colour196"
-fi
-
-# ── 8. Colored zsh prompts ───────────────────────────────────────────────────
-cat > /tmp/ps1_conductor.sh <<'EOF'
-export PROMPT='%F{245}[conductor]%f $ '
-EOF
-cat > /tmp/ps1_blacksmith.sh <<'EOF'
-export PROMPT='%F{35}[blacksmith]%f $ '
-EOF
-cat > /tmp/ps1_bookworm.sh <<'EOF'
-export PROMPT='%F{33}[bookworm]%f $ '
-EOF
-cat > /tmp/ps1_artist.sh <<'EOF'
-export PROMPT='%F{135}[artist]%f $ '
-EOF
-cat > /tmp/ps1_adversary.sh <<'EOF'
-export PROMPT='%F{196}[adversary]%f $ '
-EOF
-
-tmux send-keys -t $SESSION:0.0 "source /tmp/ps1_conductor.sh && clear"  Enter
-tmux send-keys -t $SESSION:0.1 "source /tmp/ps1_blacksmith.sh && clear" Enter
-tmux send-keys -t $SESSION:0.2 "source /tmp/ps1_bookworm.sh && clear"   Enter
-tmux send-keys -t $SESSION:0.3 "source /tmp/ps1_artist.sh && clear"     Enter
-tmux send-keys -t $SESSION:0.4 "source /tmp/ps1_adversary.sh && clear"  Enter
-
-# ── 9. Launch watch in agent panes, claude --model opus in conductor ──────────
-sleep 1
-
-# Create output directories so watch doesn't show errors immediately
-mkdir -p ~/Desktop/bbb-project/outputs/blacksmith
-mkdir -p ~/Desktop/bbb-project/outputs/bookworm
-mkdir -p ~/Desktop/bbb-project/outputs/artist
-mkdir -p ~/Desktop/bbb-project/outputs/adversary
-
-# Create empty log files so tail doesn't error before agents start writing
-touch ~/Desktop/bbb-project/outputs/blacksmith/progress.log
-touch ~/Desktop/bbb-project/outputs/bookworm/progress.log
-touch ~/Desktop/bbb-project/outputs/artist/progress.log
-touch ~/Desktop/bbb-project/outputs/adversary/progress.log
-
-# Each agent pane tails its own live log
-tmux send-keys -t $SESSION:0.1 "tail -f ~/Desktop/bbb-project/outputs/blacksmith/progress.log" Enter
-tmux send-keys -t $SESSION:0.2 "tail -f ~/Desktop/bbb-project/outputs/bookworm/progress.log" Enter
-tmux send-keys -t $SESSION:0.3 "tail -f ~/Desktop/bbb-project/outputs/artist/progress.log" Enter
-tmux send-keys -t $SESSION:0.4 "tail -f ~/Desktop/bbb-project/outputs/adversary/progress.log" Enter
-
-# Conductor runs claude with opus
-sleep 1
-tmux send-keys -t $SESSION:0.0 "cd ~/Desktop/bbb-project && claude --model opus" Enter
-
-# Re-assert pane titles after Claude Code starts
-sleep 4
-
-tmux select-pane -t $SESSION:0.0 -T "#[fg=colour255,bold]🎼  CONDUCTOR#[default]"
-tmux select-pane -t $SESSION:0.1 -T "#[fg=colour35,bold]⚒  BLACKSMITH#[default]"
-tmux select-pane -t $SESSION:0.2 -T "#[fg=colour33,bold]📚  BOOKWORM#[default]"
-tmux select-pane -t $SESSION:0.3 -T "#[fg=colour135,bold]🎨  ARTIST#[default]"
-tmux select-pane -t $SESSION:0.4 -T "#[fg=colour196,bold]⚔  ADVERSARY#[default]"
-
-# ── 10. Attach ───────────────────────────────────────────────────────────────
-tmux select-pane -t $SESSION:0.0
-tmux attach -t $SESSION
+echo "Demo ready. VSCode (Conductor) on the left, 4 agent monitors on the right."
