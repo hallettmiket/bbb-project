@@ -17,16 +17,15 @@ DISPLAY_HEIGHT=1080
 MENU_BAR=25
 
 # ── Layout geometry ───────────────────────────────────────────────────────────
-# VSCode (Conductor): left 42%
+# VSCode (Conductor): left ~52%  (990px wide on 1920px display)
 VSCODE_LEFT=$DISPLAY_X
 VSCODE_TOP=$(( DISPLAY_Y + MENU_BAR ))
-VSCODE_RIGHT=$(( DISPLAY_X + DISPLAY_WIDTH * 44 / 100 ))
+VSCODE_RIGHT=$(( DISPLAY_X + 990 ))
 VSCODE_BOTTOM=$(( DISPLAY_Y + DISPLAY_HEIGHT ))
 
-# Agent windows: stacked vertically, same height as VSCode (menu bar to bottom)
-# Small gap between VSCode and agent area
-AGENT_LEFT=$(( DISPLAY_X + DISPLAY_WIDTH * 44 / 100 ))
-AGENT_RIGHT=$(( DISPLAY_X + DISPLAY_WIDTH * 98 / 100 ))
+# Agent windows: right side, 888px wide, stacked vertically
+AGENT_LEFT=$(( DISPLAY_X + 993 ))
+AGENT_RIGHT=$(( DISPLAY_X + 993 + 888 ))
 AGENT_TOP=$(( DISPLAY_Y + MENU_BAR ))
 AGENT_BOTTOM=$(( DISPLAY_Y + DISPLAY_HEIGHT ))
 USABLE_HEIGHT=$(( AGENT_BOTTOM - AGENT_TOP ))
