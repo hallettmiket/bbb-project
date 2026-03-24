@@ -3,52 +3,19 @@ Round 1:
 This prompt is the first step to analyze the Blood Brain Barrier (BBB) dataset.  
 Please spawn all four subagents simultaneously to work in parallel.
 
-- BLACKSMITH: Find and load the BBB dataset used in Shaker et al. PMID  33112379
+- BLACKSMITH: 
 
--Determine basic statistics (number of molecules, class balance, 
-number of features). 
+Find and load the BBB dataset used in Shaker et al. PMID  33112379
 
-Don't forget to summarize your work as requested.
-
-- BOOKWORM: Look up the paper "Shaker et al. 2021 Bioinformatics BBB" 
-and write a 200 word summary of the dataset and methodology. 
-Make sure you create your literature_summary
-
-- ARTIST: Generate a simple bar chart showing BBB+ vs BBB- class 
-balance (use placeholder values 70% / 30% if data not ready yet)
-
-- ADVERSARY: Review the approach used in Shaker et al. and flag 
-any potential issues which should be considered in the planned 
-analysis pipeline. 
-Save your critique to  your audit document. 
-Don't forget to review the artist's work and critique it too.
-Also review the blacksmith work and make sure that the download 
-was successful.
-
-
-
-
-
-
-
-
-
-Round 2:
-The prompt focus on the next phase of analysis. 
-
-Artist: I want you to choose the top 5 predictions from Shaker et al. 
-and draw  their molecular structure. You could add it to your gallery. 
-Make sure to inform the blacksmith of what tools you are using to 
-draw the molecules
-
-Blacksmith: I want you to write a streamlit graphic user interface 
+I want you to write a streamlit graphic user interface 
 to allow the user to explore the data set. 
 It is important that we can see which of the four underlying data 
 sets each molecule comes from.
 
-When we perform classification later on, 
-we're not going to use perhaps all of the different properties/descriptors.
-Allow the user to select properties that they want.
+The user would like to see as many different properties/descriptors
+of the molecules as possible
+Allow the user to select properties that they want to see in 
+the table.
 Please organize all of the properties of each molecule into 
 categories and provide a short explanation of each. 
 Make sure all of the properties are included.
@@ -56,22 +23,129 @@ Make sure the user interface shows the results of the
 experiments  (whether it traverses the basement membrane or not) 
 and what the computational prediction was from Shaker et al.
 
-Using the same tool for drawing molecules as the artist used, 
-allow the user to click on any molecule in the data set and
-see the image in the GUI
+Allow the user to click on any molecule in the data set and
+see the image in the GUI.
 
-Bookworm: I want you to look at the literature for what is known 
+
+- BOOKWORM: Look up the paper "Shaker et al. 2021 Bioinformatics BBB" 
+and write a 200 word summary of the dataset and methodology. 
+I want you to look at the literature for what is known 
 about classifying molecules that  traverse the BBB. 
 These techniques may not be based on computation, but rather 
 knowledge of chemistry.
 
-Write a short report about this methodology, of course, 
-add to your literature review.
+In your literature survey, include a specific section on Pin1 
+(peptidyl-prolyl isomerase, gene PINB/PIN1) as a CNS drug target. 
+Summarise its role in tau phosphorylation, APP processing, and 
+Alzheimer's disease. Note that Pin1 activators — not inhibitors — 
+may be neuroprotective, which is an unusual therapeutic direction.
 
-Adversary: I want you to critique the methods used for prediction in Shaker et al.
-Point out any weaknesses in their approach and suggest an
-alternative approach. Ideally we want the simplest approach Occam's razor.
-In the next round, the Blacksmith will implement this. 
+Make sure you create your literature_summary
+
+- ARTIST: 
+After the Blacksmith finishes, generate a series of images that 
+describe some basic statistics of the Shaker et al. dataset. 
+For example, number of molecules, class balance,  number of features, 
+simple bar chart showing BBB+ vs BBB- class  balance.
+
+
+- ADVERSARY: 
+
+I want you to critique the methods used for prediction in Shaker et al.
+Point out any weaknesses in their approach.
+If you have suggestions of approaches that would improve their
+manuscript, please submit those papers to the bookworm to include
+on her list.
+Don't forget to review the artist's work and critique it too.
+Save your critique to  your audit document. 
+
+Consider whether any molecules in the BBB+ set have structural 
+features consistent with known Pin1 ligands (WW domain binders 
+or PPIase active site binders). Flag this as a hypothesis for 
+Round 2.
+
+
+
+
+
+
+
+
+
+Round 2
+
+- BLACKSMITH: In addition to the general druggable CNS target analysis, I want 
+you to specifically ask: do any of our top BBB+ predicted molecules 
+have structural features consistent with binding Pin1?
+
+Pin1 has two binding sites:
+1. The WW domain — recognises phosphoserine/phosphothreonine-proline 
+   motifs (pSer/Thr-Pro)
+2. The PPIase catalytic domain — where small molecule inhibitors 
+   like juglone and ATRA bind
+
+Fetch the AlphaFold structure for human PIN1 (UniProt P56399).
+Use fpocket to identify the druggable pockets.
+For the top 5 BBB+ candidates, run a simple structural comparison 
+to known Pin1 ligands from ChEMBL.
+Report which, if any, of our molecules are plausible Pin1 binders.
+
+
+- BOOKWORM: 
+For the most promising 10 BBB+ predictions, query ClinicalTrials.gov 
+to identify which are currently in active CNS clinical trials. 
+
+Then query ChEMBL for their known CNS targets. 
+
+Report any molecule that is both a predicted BBB+  AND currently in a 
+Phase  II or III CNS trial — these are our model's validation cases.
+
+I want you to search ChemDB for any information about these  molecules.
+This should be included in your report with the name of the user's experiment.
+
+For the Pin1 target specifically:
+- Query ChEMBL for all known Pin1 inhibitors and activators with 
+  CNS activity data
+- Query ClinicalTrials.gov for any trials involving Pin1 modulation 
+  in neurological disease
+- Look up the key papers: Lu KP et al. Nature 2003 (Pin1 and 
+  neurodegeneration), and Pastorino et al. Nature 2006 
+  (Pin1 and APP processing)
+- Note the unusual therapeutic logic: in cancer you want Pin1 
+  inhibitors, but in Alzheimer's you may want Pin1 activators — 
+  report whether any known activators are BBB+
+
+- ARTIST: 
+I want you to add append to your report, information about each of the models 
+validation cases from the bookworm.
+If there are protein-molecule binding predictinos, I want to see these images.
+
+Fetch and render the AlphaFold structure of Pin1 (P56399) using 
+py3Dmol or NGLview. Colour by pLDDT confidence score.
+Highlight the WW domain and PPIase domain in different colours.
+If any of our BBB+ molecules are predicted Pin1 binders, show a 
+docking pose or at minimum overlay the molecule's pharmacophore 
+on the known binding pocket.
+
+- ADVERSARY: You must look at the output of all three previous sub agents 
+and criticize it constructively.
+
+Flag both potential problems and places where you are more confident 
+in the findings and worthy of more follow up
+
+Critically evaluate the Pin1 hypothesis:
+- Is the structural evidence for Pin1 binding convincing or 
+  speculative?
+- Is the pLDDT confidence score in the predicted binding regions 
+  high enough to trust a docking result?
+- What is the risk of polypharmacology — does hitting Pin1 with 
+  a BBB+ molecule have dangerous off-target implications given 
+  Pin1's role in cancer?
+- Flag this tension explicitly: the same molecule that might 
+  protect neurons via Pin1 activation could promote tumour 
+  growth in dividing cells.
+
+
 
 
 
@@ -81,97 +155,7 @@ In the next round, the Blacksmith will implement this.
 
 Round 3
 
-Blacksmith: 
-
-(1) I want you to implement the classifier from the adversary. 
-This should be amde accessible from within the GUI to the user.
-
-The user should be able to select the descriptors/properties they want,
-and you should learn a classify with these properties with the data set 
-that's been selected.
-
-The user should be able to specify a name for the experiment and the 
-results of the classifier should be saved appropriately.
-
-(2) I want you to use the classifier from the adversary and the features/descriptors
-suggested by the adversary to build a Baseline classifier.
-
-(3) for all classifiers, the classifier should be learned with a train 
-and test valdiation dataset.
-
-Performance should be measured in all the standard ways, I will leave this to 
-you to decide the right suite of statistics.
-
-Please inform the artist when the experiment is finished, 
-and the artist will create images that detail performance in their report.
-
-Bookworm: 
-When the blacksmith finishes the baseline classifier,
-identify the top 50 BBB+ predictions. 
-For the top 50 BBB+ predicted molecules, query ClinicalTrials.gov 
-to identify which are currently in active CNS clinical trials. 
-
-Then query ChEMBL for their known CNS targets. 
-Report any molecule  that is both predicted BBB+ by our model AND
- currently in a Phase  II or III CNS trial — these are our model's validation cases.
-I want you to search ChemDB for any information about these 10 molecules.
-This should be included in your report with the name of the user's experiment.
-
-Artist: after the bookworm finishes investigating the baseline classifer,
-I want you to add append to your report
-
-Information about each of the models validation cases from the bookworm.
-
-I want to see typical type graphs that describe performance 
-alongside the statistics like accuracy and other measures from the blacksmith.
-Make the report intuitive and explain each term that's used with clear, 
-simple definitions.
-Append this to your HTML report
-
-Adversary: You must look at the output of all three previous sub agents 
-and criticize it constructively.
-Flag both potential problems and places where you are more confident 
-in the findings and worthy of more follow up
-
-
-
-
-
-
-
-
-
-
-
-
-Round 4
-
-Blacksmith: I want you to design an approach to address the following
-question "For a BBB+ predicted molecule,  can we determine 
-whether it is likely to hit a druggable CNS target based 
-on structural features?" as follow:
-
-Pull the promising BBB+ candidates obtained in the previous round
-Query UniProt + AlphaFold for their known/predicted targets
-Run a simple pocket druggability analysis using fpocket 
-(open source, installable via pip) 
-or just query PDB for known structures
-
-ARTIST renders a summary: for each top molecule, 
-show its predicted target, the AlphaFold confidence score for the 
-binding region, and whether a crystal structure exists in PDB
-
-BOOKWORM: update your report with these findings.
-
-Adversary: as usual, a critical evaluation of these results is needed.
-You need to state whether you believe our simple approach is as good or worse
-than the original approach from Shaker et al. and why.
-
-
-
-Round 5
-
-Bookworm: Using all of the reports from the blacksmith, artist and adversary,
+- BOOKWORM: Using all of the reports from the blacksmith, artist and adversary,
 create a PowerPoint presentation which
 focus on the the most promising molecules.
 What is the evidence they are BBB+? what do they look like? What is known
@@ -179,6 +163,13 @@ about them? What do they interact with? Clinical trials?
 Please make it a clear, concise scientific presentation from
 the Hallett lab at Western University.
 
-Conductor: write an exam that tests the user's understand
+Dedicate one section of the PowerPoint to the Pin1 hypothesis:
+Slide title: "A surprising CNS target: Pin1 as a therapeutic 
+opportunity in Alzheimer's disease"
+Include: what Pin1 is, why it matters for tau and APP, which 
+of our BBB+ molecules might engage it, and what the clinical 
+opportunity and risk looks like.
+
+- CONDUCTOR:  write an exam that tests the user's understand
 of all material (technical, biological, background etc.)
 that underlies our analysis here.

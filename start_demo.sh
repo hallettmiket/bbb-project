@@ -91,7 +91,7 @@ sleep 0.5
 # Row 2: Bookworm (blue)
 open_agent_window "📚  BOOKWORM" \
   $AGENT_LEFT $AGENT_ROW2_TOP $AGENT_RIGHT $AGENT_ROW3_TOP \
-  "34" ~/Desktop/bbb-project/outputs/bookworm/progress.log
+  "94" ~/Desktop/bbb-project/outputs/bookworm/progress.log
 sleep 0.5
 
 # Row 3: Artist (magenta)

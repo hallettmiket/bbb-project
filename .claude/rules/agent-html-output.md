@@ -6,7 +6,7 @@ Each subagent must maintain exactly ONE HTML "portal" page that compiles all of 
 | Agent | Portal Path | Tab Color |
 |-------|------------|-----------|
 | Blacksmith | `./outputs/blacksmith/portal.html` | Green (#2E7D32) |
-| Bookworm | `./outputs/bookworm/portal.html` | Blue (#1565C0) |
+| Bookworm | `./outputs/bookworm/portal.html` | Bright Blue (#00AAFF) |
 | Artist | `./outputs/artist/gallery.html` | Purple (#6A1B9A) |
 | Adversary | `./outputs/adversary/portal.html` | Red (#C62828) |
 
