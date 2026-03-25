@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 BBB Permeability Prediction — predicting blood-brain barrier permeability from molecular structure using the Shaker et al. (2021, Bioinformatics) dataset.
 
-**Stack:** Python, RDKit, XGBoost, Dash, matplotlib
+**Stack:** Python, RDKit, XGBoost, streamlit, matplotlib
 
 **Dataset:** B3DB (Meng et al. 2021, Scientific Data) — NOT Shaker et al. Always attribute to B3DB/Meng et al.
 

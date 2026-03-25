@@ -6,3 +6,7 @@ __pycache__/
 *.pyc
 .env
 assets/bbb-background.tiff
+*.pem
+*.key
+credentials.*
+*.secret

@@ -18,7 +18,7 @@ fi
 OPENAI_API_KEY="${OPENAI_API_KEY:?Error: OPENAI_API_KEY environment variable is not set}"
 TTS_MODEL="${TTS_MODEL:-tts-1-hd}"
 SPEED="${TTS_SPEED:-1.0}"
-AUDIO_DIR="/Users/mth/Desktop/bbb-project/outputs/audio"
+AUDIO_DIR="$SCRIPT_DIR/outputs/audio"
 
 # ── Voice mapping (compatible with bash 3) ─────────────────────────────
 # Blacksmith (Northern Ontario / Shoresy) → onyx: deep, gruff, masculine
