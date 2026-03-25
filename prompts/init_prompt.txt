@@ -74,21 +74,37 @@ Round 2.
 
 Round 2
 
-- BLACKSMITH: In addition to the general druggable CNS target analysis, I want 
-you to specifically ask: do any of our top BBB+ predicted molecules 
-have structural features consistent with binding Pin1?
+- BLACKSMITH: In addition to the general druggable CNS target analysis, I want
+you to specifically ask: do any of our molecules have structural
+features consistent with binding Pin1?
 
 Pin1 has two binding sites:
-1. The WW domain — recognises phosphoserine/phosphothreonine-proline 
+1. The WW domain — recognises phosphoserine/phosphothreonine-proline
    motifs (pSer/Thr-Pro)
-2. The PPIase catalytic domain — where small molecule inhibitors 
+2. The PPIase catalytic domain — where small molecule inhibitors
    like juglone and ATRA bind
 
 Fetch the AlphaFold structure for human PIN1 (UniProt P56399).
 Use fpocket to identify the druggable pockets.
-For the top 5 BBB+ candidates, run a simple structural comparison 
-to known Pin1 ligands from ChEMBL.
-Report which, if any, of our molecules are plausible Pin1 binders.
+
+IMPORTANT: Screen ALL ~7,800 molecules in the dataset (both BBB+ and
+BBB-) for structural similarity to known Pin1 ligands from ChEMBL,
+not just the top 10. Use Morgan fingerprint Tanimoto similarity —
+this is fast (~1 second for the full dataset). Report any molecule
+above a Tanimoto threshold of 0.3 as a candidate, and flag whether
+each hit is BBB+ or BBB-. Do not limit the search to just the
+highest-scoring BBB+ compounds.
+
+Additionally, run pharmacophore-based screening of ALL BBB+ molecules
+(~4,956) against Pin1's binding pocket. This takes ~5 minutes and is
+a target-based method that can identify structurally novel ligands
+that Tanimoto similarity would miss. Use the fpocket results to
+define the pharmacophore features of Pin1's druggable pocket(s),
+then screen all BBB+ candidates for pharmacophore matches.
+
+Report which, if any, of our molecules are plausible Pin1 binders,
+distinguishing between Tanimoto hits (similar to known ligands) and
+pharmacophore hits (novel scaffolds that fit the binding pocket).
 
 
 - BOOKWORM: 
