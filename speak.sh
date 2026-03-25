@@ -24,13 +24,13 @@ AUDIO_DIR="$SCRIPT_DIR/outputs/audio"
 # Blacksmith (Northern Ontario / Shoresy) → onyx: deep, gruff, masculine
 # Bookworm (kind, wholesome, organized)   → nova: warm, clear, friendly
 # Artist (florid, poetic, theatrical)     → fable: expressive, British-inflected
-# Adversary (passive-aggressive, dry)     → echo: cool, measured, flat affect
+# Adversary (passive-aggressive, dry)     → shimmer: cool, poised, cutting
 get_voice() {
     case "$1" in
         blacksmith) echo "onyx" ;;
         bookworm)   echo "nova" ;;
         artist)     echo "fable" ;;
-        adversary)  echo "echo" ;;
+        adversary)  echo "shimmer" ;;
         conductor)  echo "alloy" ;;
         *)          return 1 ;;
     esac
