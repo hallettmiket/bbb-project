@@ -27,12 +27,7 @@ Allow the user to click on any molecule in the data set and
 see the image in the GUI.
 
 
-- BOOKWORM: Look up the paper "Shaker et al. 2021 Bioinformatics BBB" 
-and write a 200 word summary of the dataset and methodology. 
-I want you to look at the literature for what is known 
-about classifying molecules that  traverse the BBB. 
-These techniques may not be based on computation, but rather 
-knowledge of chemistry.
+- BOOKWORM: 
 
 In your literature survey, include a specific section on Pin1 
 (peptidyl-prolyl isomerase, gene PINB/PIN1) as a CNS drug target. 
@@ -53,16 +48,12 @@ simple bar chart showing BBB+ vs BBB- class  balance.
 
 I want you to critique the methods used for prediction in Shaker et al.
 Point out any weaknesses in their approach.
-If you have suggestions of approaches that would improve their
-manuscript, please submit those papers to the bookworm to include
-on her list.
+Be very careful to distinguish between what you know and what you hypothesize
+or conjecture regarding their methodology.
+
 Don't forget to review the artist's work and critique it too.
 Save your critique to  your audit document. 
 
-Consider whether any molecules in the BBB+ set have structural 
-features consistent with known Pin1 ligands (WW domain binders 
-or PPIase active site binders). Flag this as a hypothesis for 
-Round 2.
 
 
 
@@ -84,7 +75,7 @@ Pin1 has two binding sites:
 2. The PPIase catalytic domain — where small molecule inhibitors
    like juglone and ATRA bind
 
-Fetch the AlphaFold structure for human PIN1 (UniProt P56399).
+Fetch the AlphaFold structure for human PIN1.
 Use fpocket to identify the druggable pockets.
 
 IMPORTANT: Screen ALL ~7,800 molecules in the dataset (both BBB+ and
