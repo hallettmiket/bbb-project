@@ -1,58 +1,54 @@
 Round 1:
 
-This prompt is the first step to analyze the Blood Brain Barrier (BBB) dataset.  
+This prompt is the first step to analyzing the Blood Brain Barrier (BBB) 
+dataset with respect to Pin1. 
+
 Please spawn all four subagents simultaneously to work in parallel.
 
 - BLACKSMITH: 
 
 Find and load the BBB dataset used in Shaker et al. PMID  33112379
 
-I want you to write a streamlit graphic user interface 
-to allow the user to explore the data set. 
-It is important that we can see which of the four underlying data 
-sets each molecule comes from.
+I want you to write a streamlit graphic user interface  to allow the user 
+to explore the data set. 
 
 The user would like to see as many different properties/descriptors
-of the molecules as possible
-Allow the user to select properties that they want to see in 
-the table.
-Please organize all of the properties of each molecule into 
-categories and provide a short explanation of each. 
-Make sure all of the properties are included.
-Make sure the user interface shows the results of the 
-experiments  (whether it traverses the basement membrane or not) 
-and what the computational prediction was from Shaker et al.
+of the molecules as possible. Allow the user to select properties that 
+they want to see in  the table. Please organize all of the properties of 
+each molecule into  categories and provide a short explanation of each. 
 
-Allow the user to click on any molecule in the data set and
-see the image in the GUI.
+Make sure the user interface shows the results of the  experiments  
+(whether it traverses the basement membrane or not) and the computational 
+prediction was from Shaker et al.
+
+Allow the user to click on any molecule in the data set and see a graphica
+image of the molecule in the GUI.
 
 
 - BOOKWORM: 
 
-In your literature survey, include a specific section on Pin1 
+Create your liteature survey and include a specific section on Pin1 
 (peptidyl-prolyl isomerase, gene PINB/PIN1) as a CNS drug target. 
-Summarise its role in tau phosphorylation, APP processing, and 
-Alzheimer's disease. Note that Pin1 activators — not inhibitors — 
-may be neuroprotective, which is an unusual therapeutic direction.
+Summarise its role in tau phosphorylation, APP processing, and  Alzheimer's 
+disease. Note that Pin1 activators — not inhibitors —  may be neuroprotective, 
+which is an unusual therapeutic direction.
 
-Make sure you create your literature_summary
 
 - ARTIST: 
-After the Blacksmith finishes, generate a series of images that 
-describe some basic statistics of the Shaker et al. dataset. 
-For example, number of molecules, class balance,  number of features, 
-simple bar chart showing BBB+ vs BBB- class  balance.
+After the Blacksmith finishes, generate a series of images that  describe some 
+basic statistics of the BBB dataset.   For example, number of molecules, number 
+of features, properties of BBB+ and BBB- molecules, and a simple bar chart 
+showing BBB+ vs BBB- class balance.
 
 
 - ADVERSARY: 
 
 I want you to critique the methods used for prediction in Shaker et al.
-Point out any weaknesses in their approach.
-Be very careful to distinguish between what you know and what you hypothesize
-or conjecture regarding their methodology.
+Point out any weaknesses in their approach.Be very careful to distinguish between 
+what you know and what you hypothesize or conjecture regarding their methodology.
 
-Don't forget to review the artist's work and critique it too.
-Save your critique to  your audit document. 
+Don't forget to review the artist's work and critique it too. Save your critique to  
+your audit document. 
 
 
 
@@ -66,8 +62,8 @@ Save your critique to  your audit document.
 Round 2
 
 - BLACKSMITH: In addition to the general druggable CNS target analysis, I want
-you to specifically ask: do any of our molecules have structural
-features consistent with binding Pin1?
+you to specifically investigate the question: do any of our molecules have structural 
+features consistent  with binding Pin1?
 
 Pin1 has two binding sites:
 1. The WW domain — recognises phosphoserine/phosphothreonine-proline
@@ -75,40 +71,32 @@ Pin1 has two binding sites:
 2. The PPIase catalytic domain — where small molecule inhibitors
    like juglone and ATRA bind
 
-Fetch the AlphaFold structure for human PIN1.
-Use fpocket to identify the druggable pockets.
+Fetch the AlphaFold structure for human PIN1. Use fpocket to identify the druggable 
+pockets.
 
-IMPORTANT: Screen ALL ~7,800 molecules in the dataset (both BBB+ and
-BBB-) for structural similarity to known Pin1 ligands from ChEMBL,
-not just the top 10. Use Morgan fingerprint Tanimoto similarity —
-this is fast (~1 second for the full dataset). Report any molecule
-above a Tanimoto threshold of 0.3 as a candidate, and flag whether
-each hit is BBB+ or BBB-. Do not limit the search to just the
-highest-scoring BBB+ compounds.
+Find all known Pin1 ligands form ChEMBL.
 
-Additionally, run pharmacophore-based screening of ALL BBB+ molecules
-(~4,956) against Pin1's binding pocket. This takes ~5 minutes and is
-a target-based method that can identify structurally novel ligands
-that Tanimoto similarity would miss. Use the fpocket results to
-define the pharmacophore features of Pin1's druggable pocket(s),
-then screen all BBB+ candidates for pharmacophore matches.
+IMPORTANT: Screen ALL ~7,800 molecules in the dataset (both BBB+ and BBB-) for 
+structural  similarity to the known Pin1 ligands. Use Morgan fingerprint Tanimoto 
+similarity — this is fast (~1 second for the full dataset). Report any molecule
+above a Tanimoto threshold of 0.3 as a candidate, and flag whether each hit is
+BBB+ or BBB-. 
 
-Report which, if any, of our molecules are plausible Pin1 binders,
-distinguishing between Tanimoto hits (similar to known ligands) and
-pharmacophore hits (novel scaffolds that fit the binding pocket).
+Additionally, run pharmacophore-based screening of ALL BBB+ molecules (~4,956) 
+against Pin1's binding pocket. This takes ~5 minutes and is a target-based method 
+that can identify structurally novel ligands that Tanimoto similarity would miss. 
+Use the fpocket results to define the pharmacophore features of Pin1's druggable 
+pocket(s), then screen all BBB+ candidates for pharmacophore matches.
+
+Report which, if any, of our molecules are plausible Pin1 binders, distinguishing 
+between Tanimoto hits (similar to known ligands) and pharmacophore hits (novel 
+scaffolds that fit the binding pocket).
 
 
 - BOOKWORM: 
-For the most promising 10 BBB+ predictions, query ClinicalTrials.gov 
-to identify which are currently in active CNS clinical trials. 
 
-Then query ChEMBL for their known CNS targets. 
-
-Report any molecule that is both a predicted BBB+  AND currently in a 
-Phase  II or III CNS trial — these are our model's validation cases.
-
-I want you to search ChemDB for any information about these  molecules.
-This should be included in your report with the name of the user's experiment.
+For the following, use BOOKWORM subagents if it can speed this computational
+up considerably.
 
 For the Pin1 target specifically:
 - Query ChEMBL for all known Pin1 inhibitors and activators with 
@@ -122,35 +110,37 @@ For the Pin1 target specifically:
   inhibitors, but in Alzheimer's you may want Pin1 activators — 
   report whether any known activators are BBB+
 
+
+As the BLACKSMITH identifies potential binders of Pin1, I want you 
+at the same time to query ClinicalTrials.gov  to identify which are currently in 
+active CNS clinical trials.  Then query ChEMBL for their known CNS targets. 
+Report any molecule that is both a predicted BBB+  AND currently in a  Phase  
+II or III CNS trial — these are our model's validation cases. I want you to search 
+ChemDB for any information about these  molecules. This should be included in your 
+report with the name of the user's experiment.
+
+
 - ARTIST: 
-I want you to add append to your report, information about each of the models 
-validation cases from the bookworm.
-If there are protein-molecule binding predictinos, I want to see these images.
+I want you to append to your report information about each of the models 
+validation cases from the bookworm. If there are protein-molecule binding predictinos, 
+I want to see these images of this binding
 
-Fetch and render the AlphaFold structure of Pin1 (P56399) using 
-py3Dmol or NGLview. Colour by pLDDT confidence score.
-Highlight the WW domain and PPIase domain in different colours.
-If any of our BBB+ molecules are predicted Pin1 binders, show a 
-docking pose or at minimum overlay the molecule's pharmacophore 
-on the known binding pocket.
+Fetch and render the AlphaFold structure of Pin1 (P56399) using  py3Dmol or NGLview. 
+Colour by pLDDT confidence score. Highlight the WW domain and PPIase domain in different 
+colours. If any of our BBB+ molecules are predicted Pin1 binders, show a  docking pose 
+or at minimum overlay the molecule's pharmacophore  on the known binding pocket.
 
-- ADVERSARY: You must look at the output of all three previous sub agents 
-and criticize it constructively.
-
-Flag both potential problems and places where you are more confident 
+- ADVERSARY: You must look at the output of all three previous sub agents and criticize 
+it constructively. Flag both potential problems and places where you are more confident 
 in the findings and worthy of more follow up
 
 Critically evaluate the Pin1 hypothesis:
-- Is the structural evidence for Pin1 binding convincing or 
-  speculative?
-- Is the pLDDT confidence score in the predicted binding regions 
-  high enough to trust a docking result?
-- What is the risk of polypharmacology — does hitting Pin1 with 
-  a BBB+ molecule have dangerous off-target implications given 
-  Pin1's role in cancer?
-- Flag this tension explicitly: the same molecule that might 
-  protect neurons via Pin1 activation could promote tumour 
-  growth in dividing cells.
+- Is the structural evidence for Pin1 binding convincing or   speculative?
+- Is the pLDDT confidence score in the predicted binding regions high enough to trust 
+  a docking result?
+- What is the risk of polypharmacology — does hitting Pin1 with a BBB+ molecule have 
+  dangerous off-target implications?
+
 
 
 
@@ -161,22 +151,8 @@ Critically evaluate the Pin1 hypothesis:
 
 
 Round 3
+- CONDUCTOR: using the findings of all subagents, write a short html report that highlights 
+the most interesting findings and the  most promising next steps.
 
-- BOOKWORM: Using all of the reports from the blacksmith, artist and adversary,
-create a PowerPoint presentation which
-focus on the the most promising molecules.
-What is the evidence they are BBB+? what do they look like? What is known
-about them? What do they interact with? Clinical trials?
-Please make it a clear, concise scientific presentation from
-the Hallett lab at Western University.
-
-Dedicate one section of the PowerPoint to the Pin1 hypothesis:
-Slide title: "A surprising CNS target: Pin1 as a therapeutic 
-opportunity in Alzheimer's disease"
-Include: what Pin1 is, why it matters for tau and APP, which 
-of our BBB+ molecules might engage it, and what the clinical 
-opportunity and risk looks like.
-
-- CONDUCTOR:  write an exam that tests the user's understand
-of all material (technical, biological, background etc.)
-that underlies our analysis here.
+- CONDUCTOR:  write an exam that tests the user's understand of all material (technical, 
+biological, background etc.) that underlies our analysis here.
