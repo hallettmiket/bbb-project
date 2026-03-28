@@ -7,7 +7,7 @@ Please spawn all four subagents simultaneously to work in parallel.
 
 - BLACKSMITH: 
 
-Find and load the BBB dataset used in Shaker et al. PMID  33112379
+Find and load the BBB dataset used in Meng et al. PMID  34716354
 
 I want you to write a streamlit graphic user interface  to allow the user 
 to explore the data set. 
@@ -17,9 +17,9 @@ of the molecules as possible. Allow the user to select properties that
 they want to see in  the table. Please organize all of the properties of 
 each molecule into  categories and provide a short explanation of each. 
 
-Make sure the user interface shows the results of the  experiments  
-(whether it traverses the basement membrane or not) and the computational 
-prediction was from Shaker et al.
+Make sure the user interface indicates the evidence for why it is BBB+
+(traverse the BBB) or BBB-. Indicate where this evdience comes from,
+whether it is experimental or whether it is computational.
 
 Allow the user to click on any molecule in the data set and see a graphica
 image of the molecule in the GUI.
@@ -43,9 +43,12 @@ showing BBB+ vs BBB- class balance.
 
 - ADVERSARY: 
 
-I want you to critique the methods used for prediction in Shaker et al.
-Point out any weaknesses in their approach.Be very careful to distinguish between 
-what you know and what you hypothesize or conjecture regarding their methodology.
+I want you to critique the  dataset from Meng and point out any weaknesses 
+in their approach.
+Be very careful to distinguish between  what you know and what you hypothesize
+or conjecture regarding their methodology.
+If you provide a criticsm, point to a position in the manuscript or
+dataset that supports your statement.
 
 Don't forget to review the artist's work and critique it too. Save your critique to  
 your audit document. 
@@ -156,3 +159,5 @@ the most interesting findings and the  most promising next steps.
 
 - CONDUCTOR:  write an exam that tests the user's understand of all material (technical, 
 biological, background etc.) that underlies our analysis here.
+
+
